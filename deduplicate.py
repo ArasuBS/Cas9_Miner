@@ -12,9 +12,8 @@ for record in SeqIO.parse(input_file, "fasta"):
         seen.add(seq)
         unique_records.append(record)
 
-print(f"Original: {len(seen)} unique sequences")
+print(f"Unique sequences: {len(unique_records)}")
 
 SeqIO.write(unique_records, output_file, "fasta")
 
-print("Deduplication complete ✅")
-``
+print("Deduplication complete")
