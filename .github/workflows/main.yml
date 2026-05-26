@@ -58,12 +58,16 @@ jobs:
 
     - name: Add organism info to BLAST hits
       run: |
+        export PATH=$PATH:$HOME/edirect
+
         echo -e "Subject_ID\tIdentity\tLength\tEvalue\tOrganism" > fncas9_hits_with_org.txt
+
+        head -n 20 fncas9_hits.txt > temp_hits.txt
 
         while read q s p l e b; do
           org=$(esearch -db protein -query $s | efetch -format docsum | xtract -pattern DocumentSummary -element Organism)
           echo -e "$s\t$p\t$l\t$e\t$org" >> fncas9_hits_with_org.txt
-        done < <(head -n 20 fncas9_hits.txt)
+        done < temp_hits.txt
 
     - name: Count clustered sequences
       run: grep -c ">" cas9_clustered.fasta
