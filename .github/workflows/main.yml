@@ -34,6 +34,18 @@ jobs:
     - name: Cluster sequences (90% identity)
       run: cd-hit -i cas9_deduplicated.fasta -o cas9_clustered.fasta -c 0.9 -n 5
       
+    - name: Install BLAST
+      run: sudo apt-get update && sudo apt-get install -y ncbi-blast+
+
+    - name: Prepare database
+      run: makeblastdb -in cas9_clustered.fasta -dbtype prot
+
+    - name: Run BLAST (FnCas9 vs dataset)
+      run: blastp -query fncas9_reference.fasta \
+                  -db cas9_clustered.fasta \
+                  -out fncas9_hits.txt \
+                  -outfmt "6 qseqid sseqid pident length evalue bitscore"
+      
     - name: Count clustered sequences
       run: grep -c ">" cas9_clustered.fasta
       
@@ -43,3 +55,4 @@ jobs:
         name: cas9_sequences
         path: |
          *.fasta
+         *.txt
