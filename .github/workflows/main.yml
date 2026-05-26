@@ -37,47 +37,16 @@ jobs:
     - name: Install BLAST
       run: sudo apt-get update && sudo apt-get install -y ncbi-blast+
 
-    - name: Install NCBI EDirect
-      run: |
-        cd $HOME
-        perl -MNet::FTP -e '
-          $ftp = Net::FTP->new("ftp.ncbi.nlm.nih.gov", Passive => 1);
-          $ftp->login;
-          $ftp->binary;
-          $ftp->get("/entrez/entrezdirect/edirect.tar.gz");
-        '
-        tar -xzvf edirect.tar.gz
-        cd edirect
-    
-        # ✅ Fix xtract explicitly
-        ./nquire -dwn ftp.ncbi.nlm.nih.gov entrez/entrezdirect xtract.Linux.gz
-        gunzip -f xtract.Linux.gz
-        chmod +x xtract.Linux
-        ln -s xtract.Linux xtract
-    
-        # ✅ Add to PATH
-        echo "$HOME/edirect" >> $GITHUB_PATH
-
     - name: Prepare database
       run: makeblastdb -in cas9_clustered.fasta -dbtype prot
 
-    - name: Run BLAST (FnCas9 vs dataset)
-      run: blastp -query fncas9_reference.fasta -db cas9_clustered.fasta -out fncas9_hits.txt -outfmt "6 qseqid sseqid pident length evalue bitscore"
-
-
-    - name: Add organism info to BLAST hits
+    - name: Run BLAST (FnCas9 vs dataset with organism)
       run: |
-        export PATH=$PATH:$HOME/edirect
-
-        echo -e "Subject_ID\tIdentity\tLength\tEvalue\tOrganism" > fncas9_hits_with_org.txt
-
-        head -n 20 fncas9_hits.txt > temp_hits.txt
-
-        while read q s p l e b; do
-          org=$(esearch -db protein -query $s | efetch -format docsum | xtract -pattern DocumentSummary -element Organism)
-          echo -e "$s\t$p\t$l\t$e\t$org" >> fncas9_hits_with_org.txt
-        done < temp_hits.txt
-
+        blastp -query fncas9_reference.fasta \
+           -db cas9_clustered.fasta \
+           -out fncas9_hits_with_org.txt \
+           -outfmt "6 sseqid pident length evalue stitle"
+ 
     - name: Count clustered sequences
       run: grep -c ">" cas9_clustered.fasta
       
