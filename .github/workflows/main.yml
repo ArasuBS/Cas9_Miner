@@ -36,6 +36,19 @@ jobs:
       
     - name: Install BLAST
       run: sudo apt-get update && sudo apt-get install -y ncbi-blast+
+      
+    - name: Install NCBI EDirect
+      run: |
+        cd ~
+        perl -MNet::FTP -e '
+          $ftp = Net::FTP->new("ftp.ncbi.nlm.nih.gov", Passive => 1);
+          $ftp->login;
+          $ftp->binary;
+          $ftp->get("/entrez/entrezdirect/edirect.tar.gz");
+        '
+        tar -xzvf edirect.tar.gz
+        export PATH=$PATH:$HOME/edirect
+        echo "export PATH=$PATH:$HOME/edirect" >> $GITHUB_EN
 
     - name: Prepare database
       run: makeblastdb -in cas9_clustered.fasta -dbtype prot
