@@ -36,11 +36,10 @@ jobs:
       
     - name: Install BLAST
       run: sudo apt-get update && sudo apt-get install -y ncbi-blast+
-      
 
     - name: Install NCBI EDirect
       run: |
-        cd ~
+        cd $HOME
         perl -MNet::FTP -e '
           $ftp = Net::FTP->new("ftp.ncbi.nlm.nih.gov", Passive => 1);
           $ftp->login;
@@ -48,6 +47,15 @@ jobs:
           $ftp->get("/entrez/entrezdirect/edirect.tar.gz");
         '
         tar -xzvf edirect.tar.gz
+        cd edirect
+    
+        # ✅ Fix xtract explicitly
+        ./nquire -dwn ftp.ncbi.nlm.nih.gov entrez/entrezdirect xtract.Linux.gz
+        gunzip -f xtract.Linux.gz
+        chmod +x xtract.Linux
+        ln -s xtract.Linux xtract
+    
+        # ✅ Add to PATH
         echo "$HOME/edirect" >> $GITHUB_PATH
 
     - name: Prepare database
