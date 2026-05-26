@@ -41,11 +41,8 @@ jobs:
       run: makeblastdb -in cas9_clustered.fasta -dbtype prot
 
     - name: Run BLAST (FnCas9 vs dataset)
-      run: blastp -query fncas9_reference.fasta \
-                  -db cas9_clustered.fasta \
-                  -out fncas9_hits.txt \
-                  -outfmt "6 qseqid sseqid pident length evalue bitscore"
-      
+      run: blastp -query fncas9_reference.fasta -db cas9_clustered.fasta -out fncas9_hits.txt -outfmt "6 qseqid sseqid pident length evalue bitscore"
+
     - name: Count clustered sequences
       run: grep -c ">" cas9_clustered.fasta
       
