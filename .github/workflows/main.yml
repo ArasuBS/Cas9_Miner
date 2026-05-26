@@ -47,8 +47,10 @@ jobs:
           $ftp->get("/entrez/entrezdirect/edirect.tar.gz");
         '
         tar -xzvf edirect.tar.gz
+        cd edirect
+        ./install-edirect.sh
         export PATH=$PATH:$HOME/edirect
-        echo "export PATH=$PATH:$HOME/edirect" >> $GITHUB_ENV
+        echo "$HOME/edirect" >> $GITHUB_PATH
 
     - name: Prepare database
       run: makeblastdb -in cas9_clustered.fasta -dbtype prot
