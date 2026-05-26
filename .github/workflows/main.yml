@@ -28,6 +28,15 @@ jobs:
     - name: Deduplicate
       run: python deduplicate.py
       
+    - name: Install CD-HIT
+      run: sudo apt-get update && sudo apt-get install -y cd-hit
+
+    - name: Cluster sequences (90% identity)
+      run: cd-hit -i cas9_deduplicated.fasta -o cas9_clustered.fasta -c 0.9 -n 5
+      
+    - name: Count clustered sequences
+      run: grep -c ">" cas9_clustered.fasta
+      
     - name: Upload results
       uses: actions/upload-artifact@v4
       with:
