@@ -43,6 +43,15 @@ jobs:
     - name: Run BLAST (FnCas9 vs dataset)
       run: blastp -query fncas9_reference.fasta -db cas9_clustered.fasta -out fncas9_hits.txt -outfmt "6 qseqid sseqid pident length evalue bitscore"
 
+    - name: Add organism info to BLAST hits
+      run: |
+        echo -e "Subject_ID\tIdentity\tLength\tEvalue\tOrganism" > fncas9_hits_with_org.txt
+
+        while read q s p l e b; do
+          org=$(esearch -db protein -query $s | efetch -format docsum | xtract -pattern DocumentSummary -element Organism)
+          echo -e "$s\t$p\t$l\t$e\t$org" >> fncas9_hits_with_org.txt
+        done < <(head -n 20 fncas9_hits.txt)
+
     - name: Count clustered sequences
       run: grep -c ">" cas9_clustered.fasta
       
