@@ -37,6 +37,7 @@ jobs:
     - name: Install BLAST
       run: sudo apt-get update && sudo apt-get install -y ncbi-blast+
       
+
     - name: Install NCBI EDirect
       run: |
         cd ~
@@ -47,9 +48,6 @@ jobs:
           $ftp->get("/entrez/entrezdirect/edirect.tar.gz");
         '
         tar -xzvf edirect.tar.gz
-        cd edirect
-        ./install-edirect.sh
-        export PATH=$PATH:$HOME/edirect
         echo "$HOME/edirect" >> $GITHUB_PATH
 
     - name: Prepare database
@@ -57,6 +55,7 @@ jobs:
 
     - name: Run BLAST (FnCas9 vs dataset)
       run: blastp -query fncas9_reference.fasta -db cas9_clustered.fasta -out fncas9_hits.txt -outfmt "6 qseqid sseqid pident length evalue bitscore"
+
 
     - name: Add organism info to BLAST hits
       run: |
