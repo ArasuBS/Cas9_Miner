@@ -48,7 +48,7 @@ jobs:
         '
         tar -xzvf edirect.tar.gz
         export PATH=$PATH:$HOME/edirect
-        echo "export PATH=$PATH:$HOME/edirect" >> $GITHUB_EN
+        echo "export PATH=$PATH:$HOME/edirect" >> $GITHUB_ENV
 
     - name: Prepare database
       run: makeblastdb -in cas9_clustered.fasta -dbtype prot
